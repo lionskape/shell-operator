@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	libjq_go "github.com/flant/libjq-go"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/alecthomas/kingpin.v2"
 
@@ -35,6 +36,9 @@ func main() {
 			// in case if shell-operator is a PID1.
 			go executor.Reap()
 
+			jqDone := make(chan struct{})
+			go libjq_go.JqCallLoop(jqDone)
+
 			operator.InitHttpServer(app.ListenAddress)
 
 			err := operator.Init()
@@ -45,7 +49,9 @@ func main() {
 			operator.Run()
 
 			// Block action by waiting signals from OS.
-			utils_signal.WaitForProcessInterruption()
+			utils_signal.WaitForProcessInterruption(func() {
+				operator.Stop()
+			})
 
 			return nil
 		})
