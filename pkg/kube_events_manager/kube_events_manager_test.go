@@ -6,6 +6,8 @@ import (
 	"testing"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -20,6 +22,10 @@ import (
 )
 
 type MockResourceInformer struct {
+}
+
+func (*MockResourceInformer) WithName(string) {
+	return
 }
 
 func (*MockResourceInformer) WithNamespace(string) {
@@ -69,7 +75,7 @@ func Test_MainKubeEventsManager_Run(t *testing.T) {
 	}
 
 	monitor.Metadata.ConfigId = "ConfigId"
-	err := mgr.AddMonitor("test", monitor)
+	_, err := mgr.AddMonitor("test", monitor, log.WithField("test", "yes"))
 	if assert.NoError(t, err) {
 		assert.Len(t, mgr.Monitors, 1)
 	}
@@ -154,7 +160,7 @@ func Test_MainKubeEventsManager_HandleEvents(t *testing.T) {
 	}
 	monitor.Metadata.ConfigId = "ConfigId"
 
-	err := mgr.AddMonitor("test", monitor)
+	_, err := mgr.AddMonitor("test", monitor, log.WithField("test", "yes"))
 	if !assert.NoError(t, err) {
 		t.FailNow()
 	}
