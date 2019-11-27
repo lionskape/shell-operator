@@ -81,6 +81,8 @@ func Test_MainKubeEventsManager_Run(t *testing.T) {
 	}
 }
 
+// TODO: fake client is limited, move it to integration tests
+//
 // Test_MainKubeEventsManager_HandleEvents
 // Scenario:
 // - create new KubeEventManager, start informers
@@ -88,7 +90,8 @@ func Test_MainKubeEventsManager_Run(t *testing.T) {
 // - add more objects
 // - receive and check events with objects
 func Test_MainKubeEventsManager_HandleEvents(t *testing.T) {
-	timeout := time.Duration(3 * time.Second)
+	//t.SkipNow()
+	timeout := time.Duration(30 * time.Second)
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
